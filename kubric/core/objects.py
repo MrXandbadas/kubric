@@ -257,7 +257,7 @@ class PhysicalObject(Object3D):
 
   @property
   def aabbox(self):
-    """ Axis-aligned bounding box [(min_x, min_y, min_y), (max_x, max_y, max_z)]."""
+    """ Axis-aligned bounding box [(min_x, min_y, min_z), (max_x, max_y, max_z)]."""
     bbox3d = self.bbox_3d
     # compute an axis aligned bounding box around the rotated bbox
     axis_aligned_bbox = np.array([bbox3d.min(axis=0), bbox3d.max(axis=0)])
