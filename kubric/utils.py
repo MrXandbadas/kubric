@@ -163,6 +163,8 @@ def get_instance_info(scene, assets_subset=None):
     info = copy.copy(instance.metadata)
     if hasattr(instance, "asset_id"):
       info["asset_id"] = instance.asset_id
+    if hasattr(instance, "segmentation_id"):
+        info["segmentation_id"] = instance.segmentation_id
     info["positions"] = instance.get_values_over_time("position")
     info["quaternions"] = instance.get_values_over_time("quaternion")
     info["velocities"] = instance.get_values_over_time("velocity")

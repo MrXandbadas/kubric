@@ -47,6 +47,7 @@ def adjust_segmentation_idxs(
       new_segmentation[segmentation == i] = asset.segmentation_id
     elif asset in new_assets_list:
       new_segmentation[segmentation == i] = new_assets_list.index(asset) + 1
+      asset.segmentation_id = i
     else:
       new_segmentation[segmentation == i] = ignored_label
   return new_segmentation
