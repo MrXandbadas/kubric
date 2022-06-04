@@ -25,6 +25,8 @@ from kubric.core.assets import UndefinedAsset  #< avoids self.assets property na
 from kubric.core.cameras import Camera
 from kubric.core.cameras import UndefinedCamera
 from kubric.core.objects import Object3D
+from kubric.core.objects import PhysicalObject
+
 
 class Scene(tl.HasTraits):
   """ Scenes hold Assets and are the main interface used by Views (such as Renderers).
@@ -106,7 +108,7 @@ class Scene(tl.HasTraits):
 
   @property
   def foreground_assets(self):
-    return tuple(a for a in self._assets if isinstance(a, Object3D) and not a.background)
+    return tuple(a for a in self._assets if isinstance(a, Object3D) or isinstance(a, PhysicalObject) and not a.background)
 
   @property
   def background_assets(self):
