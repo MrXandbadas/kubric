@@ -86,6 +86,7 @@ class AssetSource(ClosableResource):
       scratch_dir: Optional[PathLike] = None
   ):
     super().__init__()
+    self._asset_source = None
     self.name = name
     self.data_dir = file_io.as_path(data_dir)
     logging.info("Created AssetSource '%s' with '%d' assets at URI='%s'",
@@ -188,6 +189,8 @@ class AssetSource(ClosableResource):
     Returns:
       An instance of the specified asset (subtype of kubric.core.Asset)
     """
+    # Keep a reference of the Asset Source its associated with
+    self._asset_source = self
     # find corresponding asset entry
     asset_entry = self._assets.get(asset_id)
     if not asset_entry:
