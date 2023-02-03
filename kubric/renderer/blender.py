@@ -551,6 +551,21 @@ class Blender(core.View):
     obj.observe(KeyframeSetter(camera, "ortho_scale"), "orthographic_scale", type="keyframe")
     return camera_obj
 
+  #making the Fisheye Camera work
+  @add_asset.register(core.FisheyeCamera)
+  @blender_utils.prepare_blender_object
+  def _add_asset(self, obj: core.FisheyeCamera):
+    camera = bpy.data.cameras.new(obj.uid)
+    camera.type = "PANO"
+    camera_obj = bpy.data.objects.new(obj.uid, camera)
+
+    register_object3d_setters(obj, camera_obj)
+    obj.observe(AttributeSetter(camera, "lens"), "focal_length")
+    obj.observe(KeyframeSetter(camera, "lens"), "focal_length", type="keyframe")
+    obj.observe(AttributeSetter(camera, "sensor_width"), "sensor_width")
+    obj.observe(KeyframeSetter(camera, "sensor_width"), "sensor_width", type="keyframe")
+    return camera_obj
+
   @add_asset.register(core.PrincipledBSDFMaterial)
   @blender_utils.prepare_blender_object
   def _add_asset(self, obj: core.PrincipledBSDFMaterial):

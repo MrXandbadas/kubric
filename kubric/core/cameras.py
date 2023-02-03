@@ -151,3 +151,64 @@ class OrthographicCamera(Camera):
     # not sure if depth is even well defined in orthographic
     # for now just return the z value
     return z
+
+class FisheyeCamera(Camera):
+  """A :class:`Camera` that uses fisheye projection."""
+  focal_length = tl.Float(50)
+  sensor_width = tl.Float(36)
+
+  def __init__(self,
+               focal_length: float = 50,
+               sensor_width: float = 36,
+               position=(0., 0., 0.),
+               quaternion=None, up="Y", front="-Z", look_at=None, euler=None, **kwargs):
+    super().__init__(focal_length=focal_length, sensor_width=sensor_width, position=position,
+                     quaternion=quaternion, up=up, front=front, look_at=look_at, euler=euler,
+                     **kwargs)
+
+  @property
+  def field_of_view(self) -> float:
+    """ The (horizontal) field of view (fov) in radians.
+
+    .. math:: \\texttt{fov} = 2 * \\arctan{ \\frac{\\texttt{sensor_width}}{2 * \\texttt{fl}} }
+    """
+    return 2 * np.arctan2(self.sensor_width / 2, self.focal_length)
+
+  @field_of_view.setter
+  def field_of_view(self, fov: float) -> None:
+    self.focal_length = self.sensor_width / (2 * np.tan(fov / 2))
+
+  @property
+  def sensor_height(self):
+    scene = self.active_scene
+    return self.sensor_width / scene.resolution[0] * scene.resolution[1]
+
+  def z_to_depth(self, z: ArrayLike) -> np.ndarray:
+    z = np.array(z)
+    assert z.ndim >= 3
+    h, w, _ = z.shape[-3:]
+
+    pixel_centers_x = (np.arange(-w/2, w/2, dtype=np.float32) + 0.5) / w * self.sensor_width
+    pixel_centers_y = (np.arange(-h/2, h/2, dtype=np.float32) + 0.5) / h * self.sensor_height
+    squared_distance_from_center = np.sum(np.square(np.meshgrid(
+        pixel_centers_x,  # X-Axis (columns)
+        pixel_centers_y,  # Y-Axis (rows)
+        indexing="xy",
+    )), axis=0)
+
+    depth_scaling = np.sqrt(1 + squared_distance_from_center / self.focal_length**2)
+    depth_scaling = depth_scaling.reshape((1,) * (z.ndim - 3) + depth_scaling.shape + (1,))
+    return z * depth_scaling
+
+  @property
+  def intrinsics(self):
+    width, height = 1., 1.  # self.active_scene.resolution
+    f_x = self.focal_length / self.sensor_width * width
+    f_y = self.focal_length / self.sensor_height * height
+    p_x = width / 2.
+    p_y = height / 2.
+    return np.array([
+        [f_x, 0, -p_x],
+        [0, -f_y, -p_y],
+        [0,   0,   -1],
+    ])

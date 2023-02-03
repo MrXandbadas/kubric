@@ -27,7 +27,7 @@ scene += kb.Cube(name="floor", scale=(10, 10, 0.1), position=(0, 0, -0.1))
 scene += kb.Sphere(name="ball", scale=1, position=(0, 0, 1.))
 scene += kb.DirectionalLight(name="sun", position=(-1, -0.5, 3),
                              look_at=(0, 0, 0), intensity=1.5)
-scene += kb.PerspectiveCamera(name="camera", position=(3, -1, 4),
+scene += kb.FisheyeCamera(name="camera", position=(3, -1, 4),
                               look_at=(0, 0, 1))
 
 # --- render (and save the blender file)

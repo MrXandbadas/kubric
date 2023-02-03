@@ -29,6 +29,7 @@ from kubric.core.cameras import Camera
 from kubric.core.cameras import UndefinedCamera
 from kubric.core.cameras import PerspectiveCamera
 from kubric.core.cameras import OrthographicCamera
+from kubric.core.cameras import FisheyeCamera
 
 from kubric.core.color import Color
 from kubric.core.color import get_color
